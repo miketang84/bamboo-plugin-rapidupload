@@ -1,0 +1,52 @@
+<script src="/media/plugins/rapidupload/fileuploader.js" type="text/javascript"></script>
+<link href="/media/plugins/rapidupload/fileuploader.css" rel="stylesheet" type="text/css">
+<script>
+$(document).ready(function () {
+	
+	var uploader;
+	function createUploader(){            
+			uploader = new qq.FileUploader({
+			params: {},
+			element: $('.rapidupload')[0],
+			action: '/rapidupload/imgupload/?_tag={{_tag}}',
+			debug: true,
+			sizeLimit: 1000000,
+			maxConnections: 1,
+			fileTemplate: '<div class="qq-uploading">' +
+            '<span class="qq-upload-file"></span>' +
+            '<span class="qq-upload-spinner"></span>' +
+            '<span class="qq-upload-size"></span>' +
+            '<a class="qq-upload-cancel" href="#">Cancel</a>' +
+            '<span class="qq-upload-failed-text">Failed</span>' +
+        '</div>',
+			messages: {
+				typeError: "{file} 扩展名不合要求。只有扩展名为 {extensions} 的文件被允许上传。",
+				sizeError: "{file} 文件太大，最大限制为 {sizeLimit}。",
+				minSizeError: "{file} 文件太小，最小限制为 {minSizeLimit}。",
+				emptyError: "{file} 文件是空的，请重新选择文件。",
+				onLeave: "文件正在上传，如果此时离开，将会停止上传。"            
+			},
+			onComplete: function (id, fileName, result) {
+				if (result.success){
+					$('.image_id').val(result.image_id);
+					$('.thumbnail_id').val(result.thumbnail_id);					
+					$('.img_preview').css('background-image', 'url(' + result.thumbnail_path + ')');
+					if (result.thumbnail_width) {
+						$('.img_preview').css('width', result.thumbnail_width);
+					}
+					if (result.thumbnail_height) {
+						$('.img_preview').css('height', result.thumbnail_height);					
+					}
+				}
+			}
+		});
+	}
+	createUploader();
+	
+});
+</script>
+
+<div class="rapidupload" ></div>
+<input type="hidden" name="{{name}}" class="image_id" value="{{image and image.id}}" />
+<input type="hidden" name="{{thumbnail_name}}" class="thumbnail_id" value="{{thumbnail and thumbnail.id}}" />
+<div class="img_preview" style="width:{{thumbnail_width}}px;height:{{thumbnail_height}}px;border: 1px dotted gray;background-image:url(/{{thumbnail and thumbnail.path}})"></div>
